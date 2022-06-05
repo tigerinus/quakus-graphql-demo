@@ -11,6 +11,7 @@ import org.eclipse.microprofile.graphql.Query;
 import com.wangxiaohu.quarkus.graphql.demo.model.Person;
 import com.wangxiaohu.quarkus.graphql.demo.service.PersonService;
 
+import io.quarkus.logging.Log;
 import io.smallrye.graphql.api.Subscription;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.operators.multi.processors.BroadcastProcessor;
@@ -18,7 +19,20 @@ import io.smallrye.mutiny.operators.multi.processors.BroadcastProcessor;
 @GraphQLApi
 public class PersonResource {
 
-    BroadcastProcessor<Person> personBroadcastProcessor = BroadcastProcessor.create();
+    private final BroadcastProcessor<Person> _personBroadcastProcessor;
+
+    public PersonResource() {
+        _personBroadcastProcessor = BroadcastProcessor.create();
+        _personBroadcastProcessor.onCancellation().invoke(() -> Log.info("onCancellation"));
+        _personBroadcastProcessor.onCompletion().invoke(() -> Log.info("onCompletion"));
+        _personBroadcastProcessor.onFailure().invoke(throwable -> Log.info("onFailure: " + throwable));
+        _personBroadcastProcessor.onItem().invoke(person -> Log.info("onItem: " + person));
+        _personBroadcastProcessor.onOverflow().invoke(() -> Log.info("onOverflow"));
+        _personBroadcastProcessor.onRequest().invoke(() -> Log.info("onRequest"));
+        _personBroadcastProcessor.onSubscribe().invoke(sub -> Log.info("onSubscribe"));
+        _personBroadcastProcessor.onSubscription().invoke(sub -> Log.info("onSubscription"));
+        _personBroadcastProcessor.onTermination().invoke(() -> Log.info("onTermination"));
+    }
 
     @Inject
     PersonService _personService;
@@ -37,13 +51,16 @@ public class PersonResource {
     public Person createPerson(String firstName, String lastName) {
         Person person = _personService.createPerson(firstName, lastName);
 
-        personBroadcastProcessor.onNext(person);
+        Log.info("signaling the person created...");
+        _personBroadcastProcessor.onNext(person);
+        Log.info("signaled the person created.");
 
         return person;
     }
 
     @Subscription("personCreated")
     public Multi<Person> subscribeToPersonCreation() {
-        return personBroadcastProcessor;
+        Log.info("subscribeToPersonCreation");
+        return _personBroadcastProcessor;
     }
 }
