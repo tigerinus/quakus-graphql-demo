@@ -35,4 +35,10 @@ nb-configuration.xml
 # Local environment
 .env
 
+# python
 venv/
+
+# nodejs
+node_modules/
+package-lock.json
+
