@@ -11,3 +11,9 @@
     . venv/bin/activate
     pip install -r requirements.txt
     python3 subscriber.py
+
+## Running the test code in NodeJS
+
+    cd test/nodejs
+    npm install
+    node subscriber.js
