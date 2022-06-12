@@ -4,6 +4,31 @@
 
     ./gradlew quarkusDev
 
+Then go to <http://localhost:8080/q/graphql-ui> in a browser.
+
+Example GraphQL query:
+
+    mutation createPerson($firstName: String, $lastName: String) {
+      createPerson(firstName: $firstName, lastName: $lastName) {
+        id
+      }
+    }
+
+    query getAllPeople {
+      getAllPeople {
+        firstName
+        lastName
+      }
+    }
+
+    subscription personCreated {
+      personCreated {
+        id
+        firstName
+        lastName
+      }
+    }
+
 ## Running the test code in Python
 
     cd test/python
