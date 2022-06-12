@@ -19,20 +19,8 @@ import io.smallrye.mutiny.operators.multi.processors.BroadcastProcessor;
 @GraphQLApi
 public class PersonResource {
 
-    private final BroadcastProcessor<Person> _personBroadcastProcessor;
-
-    public PersonResource() {
-        _personBroadcastProcessor = BroadcastProcessor.create();
-        _personBroadcastProcessor.onCancellation().invoke(() -> Log.info("onCancellation"));
-        _personBroadcastProcessor.onCompletion().invoke(() -> Log.info("onCompletion"));
-        _personBroadcastProcessor.onFailure().invoke(throwable -> Log.info("onFailure: " + throwable));
-        _personBroadcastProcessor.onItem().invoke(person -> Log.info("onItem: " + person));
-        _personBroadcastProcessor.onOverflow().invoke(() -> Log.info("onOverflow"));
-        _personBroadcastProcessor.onRequest().invoke(() -> Log.info("onRequest"));
-        _personBroadcastProcessor.onSubscribe().invoke(sub -> Log.info("onSubscribe"));
-        _personBroadcastProcessor.onSubscription().invoke(sub -> Log.info("onSubscription"));
-        _personBroadcastProcessor.onTermination().invoke(() -> Log.info("onTermination"));
-    }
+    @Inject
+    private BroadcastProcessor<Person> _personBroadcastProcessor;
 
     @Inject
     PersonService _personService;
